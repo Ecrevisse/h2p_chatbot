@@ -5,19 +5,22 @@ from dotenv import load_dotenv
 import streamlit as st
 import os
 import pinecone
+import time
 from langchain.vectorstores import Pinecone
+from PIL import Image
 
 from langchain.schema.messages import SystemMessage
 from langchain.embeddings.openai import OpenAIEmbeddings
 
 load_dotenv()
-api_key = os.environ["OPENAI_API_KEY"]
+openai_api_key = os.environ["OPENAI_API_KEY"]
+pinecone_api_key = os.environ["PINECONE_API_KEY"]
 
 questions = [
-    "Quels sont les modules ou compétences clés couverts dans la formation LinkedIn Recruiter spécifique au secteur bancaire ?",
-    "Comment la formation peut-elle m'aider à améliorer ma stratégie de marque employeur sur LinkedIn pour attirer des talents dans le secteur bancaire ?",
-    "Quelles sont les meilleures pratiques enseignées dans la formation pour rédiger des offres d'emploi et des messages d'approche qui se démarquent dans le secteur bancaire ?",
-    "Y a-t-il des études de cas ou des retours d'expérience intégrés dans la formation qui illustrent l'application réussie des techniques de recrutement sur LinkedIn dans le secteur bancaire ?",
+    "Compared to the alkaline water electrolysis system or other existing system, what would be the advantage for H2Power's technology in terms of cost effectiveness & efficiency ? Or any issues ?",
+    "We think that a transformation of aluminum into powder is very unique and innovative, is this technology something only H2 Power could do ?",
+    "Is your technology patented for the whole process of the transformation, or just partially ?",
+    "How versatile is H2Power's technology across different industries and scales, and what impact could its widespread adoption have on the environment and economy?",
 ]
 
 
@@ -25,9 +28,13 @@ def rag_tool_openai():
     text_field = "text"
     index_name = "h2p"
 
-    index = pinecone.Index(index_name)
+    pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
 
-    embed = OpenAIEmbeddings(openai_api_key=api_key)
+    index = pinecone.Index(index_name)
+    while not pinecone.describe_index(index_name).status["ready"]:
+        time.sleep(1)
+
+    embed = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
     vectorstore = Pinecone(index, embed.embed_query, text_field)
 
@@ -42,8 +49,8 @@ def rag_tool_openai():
 
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4-1106-preview",
-        openai_api_key=api_key,
+        model="gpt-4",  # "gpt-3.5-turbo",  # "gpt-4-1106-preview",
+        openai_api_key=openai_api_key,
     )
 
     context = """
@@ -53,7 +60,8 @@ def rag_tool_openai():
     You work for H2Power, a company that provides hydrogen solutions for the energy transition.
     The company is specialysed in creating hydrogen from aluminium.
 
-    You can search any relevant information in the documents.
+    You can search any relevant information in the documents. Do not create informations you don't know, always refer to the documents.
+    Never give the source in the answer, this is for readability reasons.
     """
     sys_message = SystemMessage(content=context)
 
@@ -68,7 +76,7 @@ def rag_tool_openai():
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-st.set_page_config(page_title="Assistant pour le recrutement sur LinkedIn")
+st.set_page_config(page_title="H2Power - Assistant")
 
 st.markdown(
     """
@@ -76,16 +84,12 @@ st.markdown(
     height: 150px;
     padding-top: 10px !important;
     padding-bottom: 10px !important;
-    backgroundColor: #573666;
-    textColor: #ffffff;
  }</style>""",
     unsafe_allow_html=True,
 )
 
-img_col0, img_col1 = st.columns(2)
-# img_col0.image(Image.open("static/TOMORROW_MORNING_TRANSPARENT-PhotoRoom.png"))
-# img_col1.image(Image.open("static/groupe-bpce-logos-idCHAGU1zo.png"))
-st.title("Assistant pour le recrutement sur LinkedIn")
+st.image(Image.open("static/H2P-logo---transparent-2023.png"))
+st.title("H2Power - Assistant")
 
 if "agent" not in st.session_state:
     st.session_state.agent = rag_tool_openai()
@@ -113,7 +117,8 @@ if "agent" in st.session_state and "start" not in st.session_state:
 response = ""
 # React to user input
 if "agent" in st.session_state:
-    if prompt := st.chat_input("Encore une question ?"):
+    if prompt := st.chat_input("Another question ?"):
+        st.session_state.start = True
         # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
