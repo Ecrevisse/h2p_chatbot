@@ -81,7 +81,7 @@ pinecone-client==2.2.4
 platformdirs==4.1.0
 prompt-toolkit==3.0.43
 proto-plus==1.23.0
-protobuf==4.25.1
+protobuf==4.21.6
 psutil==5.9.7
 ptyprocess==0.7.0
 pure-eval==0.2.2
