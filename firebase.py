@@ -11,7 +11,6 @@ def initialize_firebase():
         cred = credentials.Certificate(
             "./h2power-6c703-firebase-adminsdk-ri939-4fbfff0f30.json"
         )
-        print("Initializing firebase")
         return initialize_app(
             cred,
             {"databaseURL": "https://h2power-6c703-default-rtdb.firebaseio.com"},
@@ -39,3 +38,9 @@ def add_message(conv_id, sender, message):
 
     conversations.update({f"{conv_id}/messages/{message_id}/sender": sender})
     conversations.update({f"{conv_id}/messages/{message_id}/message": message})
+
+
+@st.cache_data
+def get_all_conversations():
+    conversations = db.reference("conversations").get()
+    return conversations
