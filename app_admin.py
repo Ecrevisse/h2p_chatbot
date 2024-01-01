@@ -17,6 +17,9 @@ for conv_id in conv_ids:
     conv_names[conv_id] = f"{conv['timestamp']} - {conv_id}"
 
 # Sidebar for filtering
+# add button to clear cache
+if st.sidebar.button("Clear cache"):
+    st.cache_data.clear()
 selected_conversation = st.sidebar.selectbox(
     "Select a conversation", conv_ids, format_func=lambda x: conv_names[x]
 )
@@ -24,5 +27,8 @@ selected_conversation = st.sidebar.selectbox(
 conv = conversations[selected_conversation]
 
 st.title(f"Chat History from {conv['timestamp']}")
-for chat in conv["messages"].values():
-    st.markdown(f"**{chat['sender']}:** {chat['message']}")
+if "messages" not in conv:
+    st.write("No messages yet")
+else:
+    for chat in conv["messages"].values():
+        st.markdown(f"**{chat['sender']}:** {chat['message']}")
