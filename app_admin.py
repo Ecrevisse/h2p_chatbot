@@ -18,8 +18,9 @@ for conv_id in conv_ids:
 
 # Sidebar for filtering
 # add button to clear cache
-if st.sidebar.button("Clear cache"):
+if st.sidebar.button("Refresh"):
     st.cache_data.clear()
+    st.rerun()
 selected_conversation = st.sidebar.selectbox(
     "Select a conversation", conv_ids, format_func=lambda x: conv_names[x]
 )
