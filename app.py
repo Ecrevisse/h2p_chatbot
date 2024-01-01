@@ -12,6 +12,8 @@ from PIL import Image
 from langchain.schema.messages import SystemMessage
 from langchain.embeddings.openai import OpenAIEmbeddings
 
+import firebase
+
 load_dotenv()
 openai_api_key = os.environ["OPENAI_API_KEY"]
 pinecone_api_key = os.environ["PINECONE_API_KEY"]
@@ -24,6 +26,7 @@ questions = [
 ]
 
 
+@st.cache_resource
 def rag_tool_openai():
     text_field = "text"
     index_name = "h2p"
@@ -72,11 +75,16 @@ def rag_tool_openai():
     return agent_executor
 
 
+st.set_page_config(page_title="H2Power - Assistant")
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-st.set_page_config(page_title="H2Power - Assistant")
+if "conv_id" not in st.session_state:
+    firebase.initialize_firebase()
+    st.session_state["conv_id"] = firebase.start_conversation()
+
 
 st.markdown(
     """
@@ -108,10 +116,12 @@ if "agent" in st.session_state and "start" not in st.session_state:
             with st.chat_message("user"):
                 st.markdown(question)
             st.session_state.messages.append({"role": "user", "content": question})
+            firebase.add_message(st.session_state["conv_id"], "user", question)
             response = st.session_state.agent({"input": question})["output"]
             with st.chat_message("assistant"):
                 st.markdown(response)
             st.session_state.messages.append({"role": "assistant", "content": response})
+            firebase.add_message(st.session_state["conv_id"], "assistant", response)
             st.rerun()
 
 response = ""
@@ -124,6 +134,7 @@ if "agent" in st.session_state:
             st.markdown(prompt)
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
+        firebase.add_message(st.session_state["conv_id"], "user", prompt)
         response = st.session_state.agent({"input": prompt})["output"]
 
 # Display assistant response in chat message container
@@ -134,3 +145,4 @@ if "agent" in st.session_state:
 # Add assistant response to chat history
 if response:
     st.session_state.messages.append({"role": "assistant", "content": response})
+    firebase.add_message(st.session_state["conv_id"], "assistant", response)
