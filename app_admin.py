@@ -25,11 +25,14 @@ selected_conversation = st.sidebar.selectbox(
     "Select a conversation", conv_ids, format_func=lambda x: conv_names[x]
 )
 
-conv = conversations[selected_conversation]
-
-st.title(f"Chat History from {conv['timestamp']}")
-if "messages" not in conv:
-    st.write("No messages yet")
+if not conversations:
+    st.title("No conversations yet")
 else:
-    for chat in conv["messages"].values():
-        st.markdown(f"**{chat['sender']}:** {chat['message']}")
+    conv = conversations[selected_conversation]
+
+    st.title(f"Chat History from {conv['timestamp']}")
+    if "messages" not in conv:
+        st.write("No messages yet")
+    else:
+        for chat in conv["messages"].values():
+            st.markdown(f"**{chat['sender']}:** {chat['message']}")
