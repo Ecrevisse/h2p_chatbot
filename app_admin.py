@@ -7,7 +7,7 @@ st.set_page_config(page_title="H2Power - Admin Portal")
 
 firebase.initialize_firebase()
 conversations = firebase.get_all_conversations()
-conv_ids = list(conversations.keys())
+conv_ids = list(conversations.keys()) if conversations else []
 
 conv_names = {}
 for conv_id in conv_ids:
