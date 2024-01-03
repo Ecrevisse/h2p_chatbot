@@ -52,7 +52,7 @@ def rag_tool_openai():
 
     llm = ChatOpenAI(
         temperature=0,
-        model="gpt-4",  # "gpt-3.5-turbo",  # "gpt-4-1106-preview",
+        model="gpt-4-1106-preview",  # "gpt-3.5-turbo",  # "gpt-4",
         openai_api_key=openai_api_key,
     )
 
