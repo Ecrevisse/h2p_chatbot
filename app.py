@@ -97,7 +97,11 @@ st.markdown(
 )
 
 st.image(Image.open("static/H2P-logo---transparent-2023.png"))
+st.markdown(
+    "*The information provided by the A.I. H2 Power-Assistant is only intended to get you started on learning about our exciting technology and potential participation opportunities. Please contact us to confirm your understandings, have your questions answered, and to discuss moving forward!*"
+)
 st.title("H2Power - Assistant")
+
 
 if "agent" not in st.session_state:
     st.session_state.agent = rag_tool_openai()
