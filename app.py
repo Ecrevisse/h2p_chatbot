@@ -19,10 +19,10 @@ openai_api_key = os.environ["OPENAI_API_KEY"]
 pinecone_api_key = os.environ["PINECONE_API_KEY"]
 
 questions = [
-    "Compared to the alkaline water electrolysis system or other existing system, what would be the advantage for H2Power's technology in terms of cost effectiveness & efficiency ? Or any issues ?",
-    "We think that a transformation of aluminum into powder is very unique and innovative, is this technology something only H2 Power could do ?",
-    "Is your technology patented for the whole process of the transformation, or just partially ?",
-    "How versatile is H2Power's technology across different industries and scales, and what impact could its widespread adoption have on the environment and economy?",
+    "In terms of safety, how does H2 Power's technology compare to other hydrogen production solutions?",
+    "We think that a transformation of aluminum into powder is truly unique and innovative, is this technology something only H2 Power could do?",
+    "Compared to alkaline water electrolysis or other existing systems, what would be the advantage for H2 Power's technology in terms of cost effectiveness and efficiency?",
+    "What opportunities are available to do business with H2 Power, and what impact could its widespread adoption have on the environment and the economy?",
 ]
 
 
